@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      dockerfile: ./Dockerfile
+    command: npm run start:dev
+    volumes:
+      - ./src:/usr/src/app/src
+    ports:
+      - 3000:3000
+    environment:
+      - INFURA_API_KEY
+
