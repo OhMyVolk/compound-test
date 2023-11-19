@@ -8,5 +8,5 @@ services:
     ports:
       - 3000:3000
     environment:
-      - INFURA_API_KEY
+      - ALCHEMY_API_KEY
 

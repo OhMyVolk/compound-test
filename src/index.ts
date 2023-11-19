@@ -13,8 +13,9 @@ const WalletSchema = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function postWallet(request: any, reply: FastifyReply) {
-  const { walletAddress } = request.body;
-  await contract(process.env.INFURA_API_KEY as string, walletAddress);
+  const { wallet_address: walletAddress } = request.body;
+  await contract(process.env.ALCHEMY_API_KEY as string, walletAddress);
+
   reply.code(200).send("Ok")
 }
 
