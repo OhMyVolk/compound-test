@@ -1,5 +1,7 @@
 import Fastify, { FastifyReply } from 'fastify'
-import { contract } from './contract';
+import { getMarketWalletData } from './services/marketWalletData.service';
+
+
 const fy = Fastify({
   logger: true
 })
@@ -7,15 +9,18 @@ const fy = Fastify({
 const WalletSchema = {
   type: 'object',
   properties: {
-    wallet_address: { type: 'string' }
+    wallet_address: { type: 'string' },
+    market_name: { type: 'string' },
+    asset_name: { type: 'string' },
+    oracle_name: { type: 'string' },
   }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function postWallet(request: any, reply: FastifyReply) {
-  const { wallet_address: walletAddress } = request.body;
-  await contract(process.env.ALCHEMY_API_KEY as string, walletAddress);
-
+  const { wallet_address: walletAddress, market_name: marketName, asset_name: assetName, oracle_name: oracleName } = request.body;
+  const data = await getMarketWalletData(walletAddress, marketName, assetName, oracleName);
+  console.log(data);
   reply.code(200).send("Ok")
 }
 
@@ -32,7 +37,7 @@ fy.post('/add_wallet',
   }
 )
 
-fy.listen({ port: 3000, host: '0.0.0.0' }, (err, address) => {
+fy.listen({ port: 3000, host: '0.0.0.0' }, (err, _address) => {
   if (err) throw err
   // Server is now listening on ${address}
 })
