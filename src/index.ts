@@ -1,43 +1,40 @@
-import Fastify, { FastifyReply } from 'fastify'
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import { getMarketWalletData } from './services/marketWalletData.service';
+import { Static, Type } from '@sinclair/typebox';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
 
 const fy = Fastify({
   logger: true
+}).withTypeProvider<TypeBoxTypeProvider>()
+
+const Wallet = Type.Object({
+  wallet_address: Type.String(),
+  market_name: Type.String(),
+  asset_name: Type.String(),
+  oracle_name: Type.String(),
 })
 
-const WalletSchema = {
-  type: 'object',
-  properties: {
-    wallet_address: { type: 'string' },
-    market_name: { type: 'string' },
-    asset_name: { type: 'string' },
-    oracle_name: { type: 'string' },
-  }
-}
+type WalletType = Static<typeof Wallet>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function postWallet(request: any, reply: FastifyReply) {
-  const { wallet_address: walletAddress, market_name: marketName, asset_name: assetName, oracle_name: oracleName } = request.body;
-  const marketData = await getMarketWalletData(walletAddress, marketName, assetName, oracleName);
-  console.log(marketData);
-  reply.code(200).send("Ok")
-}
+fy.post<{ Body: WalletType }>('/add_wallet',
+  {
+    schema: {
+      body: Wallet,
+    },
+  }, async (request, reply) => {
+    const { wallet_address: walletAddress, market_name: marketName, asset_name: assetName, oracle_name: oracleName } = request.body;
+    const marketData = await getMarketWalletData(walletAddress, marketName, assetName, oracleName);
+    console.log(marketData);
+    reply.code(200).send("Ok")
+  }
+)
 
 fy.get('/ping', (_request, reply) => {
   reply.code(200).send("Pong")
 })
 
-fy.post('/add_wallet',
-  {
-    schema: {
-      body: WalletSchema,
-    },
-    handler: postWallet,
-  }
-)
 
 fy.listen({ port: 3000, host: '0.0.0.0' }, (err, _address) => {
   if (err) throw err
-  // Server is now listening on ${address}
 })
