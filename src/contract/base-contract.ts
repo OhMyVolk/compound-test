@@ -1,13 +1,15 @@
-import Web3, { Contract, Web3BaseProvider } from "web3";
+import Web3, { Contract, ContractAbi, Web3BaseProvider } from "web3";
 
-
+interface IContract<T extends ContractAbi> extends Contract<T> {
+  methods: any
+}
 
 export class BaseContract {
   abi: any
   address: string
-  contract: Contract<any>
+  contract: IContract<ContractAbi>
 
-  constructor(provider: Web3BaseProvider, abi: any, address: string) {
+  constructor(provider: Web3BaseProvider, abi: ContractAbi, address: string) {
     const web3 = new Web3(provider);
     this.abi = abi
     this.address = address

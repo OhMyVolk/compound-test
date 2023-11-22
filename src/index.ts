@@ -19,8 +19,8 @@ const WalletSchema = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function postWallet(request: any, reply: FastifyReply) {
   const { wallet_address: walletAddress, market_name: marketName, asset_name: assetName, oracle_name: oracleName } = request.body;
-  const data = await getMarketWalletData(walletAddress, marketName, assetName, oracleName);
-  console.log(data);
+  const marketData = await getMarketWalletData(walletAddress, marketName, assetName, oracleName);
+  console.log(marketData);
   reply.code(200).send("Ok")
 }
 
